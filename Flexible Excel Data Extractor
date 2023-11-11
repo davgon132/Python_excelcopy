@@ -1,0 +1,40 @@
+import pandas as pd
+
+def create_excel_file(input_file, output_file, **kwargs):
+    # Read the Excel file
+    df = pd.read_excel(input_file)
+
+    # Apply user-defined filters
+    for column, value in kwargs.items():
+        if column in df.columns:
+            df = df[df[column] == value]
+        else:
+            print(f"Warning: Column '{column}' not found in the DataFrame.")
+
+    # Prompt user for row selection
+    num_rows = kwargs.get('num_rows', len(df))
+
+    # Check if num_rows is within the range of the dataframe
+    if num_rows > len(df):
+        print(f"Error: num_rows should be less than or equal to the number of rows ({len(df)}).")
+        return
+
+    # Select the specified number of rows
+    selected_rows = df.head(num_rows)
+
+    # Write the selected rows to a new Excel file
+    selected_rows.to_excel(output_file, index=False)
+    print(f"New Excel file '{output_file}' created with {num_rows} rows.")
+
+# Example usage:
+input_file_path = "input.xlsx"  # Replace with your input Excel file path
+output_file_path = "output.xlsx"  # Replace with your desired output Excel file path
+
+# User-defined parameters
+params = {
+    'column_to_filter': 'Category',  # Replace with the column to filter
+    'filter_value': 'Electronics',    # Replace with the filter value
+    'num_rows': 100,                   # Replace with the desired number of rows
+}
+
+create_excel_file(input_file_path, output_file_path, **params)
